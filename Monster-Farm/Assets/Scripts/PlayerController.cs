@@ -73,7 +73,7 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-
+          
         if (Input.GetButtonDown("Jump"))
         {
             Debug.Log(0);
