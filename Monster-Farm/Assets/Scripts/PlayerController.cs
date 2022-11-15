@@ -5,51 +5,56 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float runSpeed;
-    public float jumpSpeed;
+
     private Rigidbody2D myRig;
     private Animator myAnima;
-    private BoxCollider2D myFeet;
+    public float jumpSpeed;
+    public int maxJump;
+    public int jumpRestTimes;
     public bool isGround;
-    public bool canDoubleJump;
-    public float doubleJumpSpeed;
+    private BoxCollider2D myFeet;
+    public float dashSpeed;
+    private float moveDir;
+
+
     // Start is called before the first frame update
     void Start()
     {
         myRig = GetComponent<Rigidbody2D>();
         myAnima = GetComponent<Animator>();
         myFeet = GetComponent<BoxCollider2D>();
+
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        AnimationSwitch();
+
         Flip();
-        
-        CheckGrounded();
+        Jump();
+        CheckGround();
+        AnimationSwitch();
+        Dash();
+
     }
 
     private void FixedUpdate()
     {
         Run();
-        Jump();
+        
     }
 
-    void CheckGrounded()
-    {
-        isGround = myFeet.IsTouchingLayers(LayerMask.GetMask("Ground"));
-    }
-   
+
     void Run()
     {
-        float horizontal = Input.GetAxis("Horizontal");
+       moveDir = Input.GetAxis("Horizontal");
 
-        Vector2 playerVel = new Vector2(horizontal * runSpeed, myRig.velocity.y);
+        Vector2 playerVel = new Vector2(moveDir * runSpeed, myRig.velocity.y);
         myRig.velocity = playerVel;
 
         bool playerHasXAxisSpeed = Mathf.Abs(myRig.velocity.x) > Mathf.Epsilon;
-        if(playerHasXAxisSpeed)
+        if (playerHasXAxisSpeed)
         {
             myAnima.SetBool("run", true);
         }
@@ -61,11 +66,11 @@ public class PlayerController : MonoBehaviour
 
     void Flip()
     {
-        if(myRig.velocity.x>0)
+        if (myRig.velocity.x > 0)
         {
             transform.localRotation = Quaternion.Euler(0, 0, 0);
         }
-        if(myRig.velocity.x<0)
+        if (myRig.velocity.x < 0)
         {
             transform.localRotation = Quaternion.Euler(0, 180, 0);
         }
@@ -73,22 +78,23 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-          
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetKeyDown(KeyCode.Space)&& jumpRestTimes>0)
         {
-            Debug.Log(0);
-            if (isGround)
-            {
-                Vector2 jumpVel = new Vector2(0.0f, jumpSpeed);
-                myRig.velocity = Vector2.up * jumpVel;
-                myAnima.SetBool("jump", true);
-                canDoubleJump = true;
-            }
+            Vector2 jumpVel = new Vector2(0.0f, jumpSpeed);
+            myRig.velocity = Vector2.up * jumpVel;
+            
+            jumpRestTimes--;
         }
-        
-        
-    }
 
+        if(isGround)
+        {
+            jumpRestTimes = maxJump;
+        }
+    }
+    void CheckGround()
+    {
+        isGround = myFeet.IsTouchingLayers(LayerMask.GetMask("Ground"));
+    }
     void AnimationSwitch()
     {
         myAnima.SetBool("idle", false);
@@ -96,16 +102,31 @@ public class PlayerController : MonoBehaviour
         {
             myAnima.SetBool("jump", false);
             myAnima.SetBool("fall", true);
-            
         }
-        else if(isGround)
+        else if(myRig.velocity.y>0.0f)
+        {
+            myAnima.SetBool("jump", true);
+            myAnima.SetBool("fall", false);
+        }
+        if(isGround)
         {
             myAnima.SetBool("fall", false);
             myAnima.SetBool("idle", true);
         }
-       
+    }
+    void Dash()
+    {
+        if(Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            myRig.AddForce(Vector2.right * moveDir * dashSpeed);
+            myAnima.SetTrigger("dash");
         }
     }
+}
+
+    
+
+   
 
    
 
