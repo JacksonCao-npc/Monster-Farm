@@ -9,10 +9,11 @@ public abstract class Enemy : MonoBehaviour
 
     public float flashTime;
 
-    
-    
+    public GameObject bloodEffect;
+
+
     // Start is called before the first frame update
-   public void Start()
+    public void Start()
     {
        
     }
@@ -29,6 +30,8 @@ public abstract class Enemy : MonoBehaviour
     public void TakenDamage(int damage)
     {
         health -= damage;
+        Instantiate(bloodEffect, transform.position, Quaternion.identity);
+        GameController.camShake.Shake();
         
         
     }

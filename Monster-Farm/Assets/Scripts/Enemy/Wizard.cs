@@ -15,6 +15,8 @@ public class Wizard : Enemy
     public Transform leftDownPos;
     public Transform rightUpPos;
 
+    
+
     // Start is called before the first frame update
     new public void Start()
     {
