@@ -17,13 +17,8 @@ public class NewBehaviourScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            
-            
-            
                 Vector2 jumpVel = new Vector2(0.0f, jumpSpeed);
                 myRig.velocity = Vector2.up * jumpVel;
-                
-               
             }
         }
     }
