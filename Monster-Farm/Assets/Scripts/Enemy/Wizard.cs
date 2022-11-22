@@ -15,18 +15,14 @@ public class Wizard : Enemy
     public Transform leftDownPos;
     public Transform rightUpPos;
 
-    
-
-    // Start is called before the first frame update
+ 
     new public void Start()
     {
-        anima = GetComponent<Animator>();
+        
         waitTime = startWaitTime;
         movePos.position = GetRandomPos();
 
     }
-
-    // Update is called once per frame
     new public void Update()
     {
         base.Update();
@@ -65,17 +61,9 @@ public class Wizard : Enemy
     }
 
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.gameObject.CompareTag("PlayerAttack")&& health>0)
-        {
-            anima.SetTrigger("damage");
+    
 
-
-        }
-
-
-    }
+        
 
     Vector2 GetRandomPos()
     {

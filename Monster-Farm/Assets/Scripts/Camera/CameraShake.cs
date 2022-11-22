@@ -5,13 +5,13 @@ using UnityEngine;
 public class CameraShake : MonoBehaviour
 {
     public Animator camAnima;
-    // Start is called before the first frame update
+
     void Start()
     {
         
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         

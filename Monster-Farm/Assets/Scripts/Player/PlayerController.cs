@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
 
     #region Component Varibles
     private BoxCollider2D myFeet;
-    private Rigidbody2D myRig;
+    public Rigidbody2D myRig;
     private Animator myAnima;
     public float myGravity = 2;
     #endregion
