@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Wizard : Enemy
 {
-    public Animator anima;
+    
     public float speed;
     public float startWaitTime;
     private float waitTime;
@@ -21,13 +21,14 @@ public class Wizard : Enemy
         
         waitTime = startWaitTime;
         movePos.position = GetRandomPos();
+        base.Start();
 
     }
     new public void Update()
     {
         base.Update();
         transform.position = Vector2.MoveTowards(transform.position, movePos.position, speed * Time.deltaTime);
-        anima.SetBool("walk", true);
+        
 
         if(Vector2.Distance(transform.position,movePos.position)<0.1f)
         {
@@ -36,7 +37,7 @@ public class Wizard : Enemy
             {
                 movePos.position = GetRandomPos();
                 waitTime = startWaitTime;
-                anima.SetBool("walk", true);
+               
             }
             else
             {
@@ -44,27 +45,10 @@ public class Wizard : Enemy
             }
         }
 
-        if (Vector2.Distance(transform.position, movePos.position) < 1f)
-        {
-            anima.SetBool("walk", false);
-        }
-
-        if(wizard.transform.position.x< movePos.transform.position.x)
-        {
-            wizard.transform.localRotation = Quaternion.Euler(0, 180, 0);
-        }
-        if (wizard.transform.position.x > movePos.transform.position.x)
-        {
-            wizard.transform.localRotation = Quaternion.Euler(0,0, 0);
-        }
-
-    }
-
-
-    
-
         
 
+
+    }
     Vector2 GetRandomPos()
     {
         Vector2 randomPos = new Vector2(Random.Range(leftDownPos.position.x, rightUpPos.position.x),

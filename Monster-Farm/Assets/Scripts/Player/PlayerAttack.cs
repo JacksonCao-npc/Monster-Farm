@@ -25,12 +25,15 @@ public class PlayerAttack : MonoBehaviour
     }
     void Attack()
     {
-        if(Input.GetKeyDown(KeyCode.J))
+        if (PlayerController.isAlive)
         {
-            
-            anime.SetTrigger("Attack");
-            StartCoroutine(StartAttack());
+            if (Input.GetKeyDown(KeyCode.J))
+            {
 
+                anime.SetTrigger("Attack");
+                StartCoroutine(StartAttack());
+
+            }
         }
 
     }

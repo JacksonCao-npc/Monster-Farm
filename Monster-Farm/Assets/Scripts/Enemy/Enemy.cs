@@ -6,14 +6,15 @@ public abstract class Enemy : MonoBehaviour
 {
     public int health;
     public int damage;
+    private SpriteRenderer sr;
+    public float flashTime;
+    private Color originalColor;
     public GameObject bloodEffect;
-    private PlayerHealth playerHealth;
-    private PlayerController playerController;
-
-
-
+    [SerializeField] PlayerHealth playerHealth;
     public void Start()
     {
+        sr = GetComponent<SpriteRenderer>();
+        originalColor = sr.color;
         playerHealth = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHealth>();
     }
 
@@ -26,11 +27,23 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
+    void FlashColor(float time)
+    {
+        sr.color = Color.red;
+        Invoke("ResetColor", time);
+    }
+
+  void ResetColor()
+    {
+        sr.color = originalColor; 
+    }
+
     public void TakenDamage(int damage)
     {
         health -= damage;
         Instantiate(bloodEffect, transform.position, Quaternion.identity);
         GameController.camShake.Shake();
+        FlashColor(flashTime);
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
@@ -38,7 +51,7 @@ public abstract class Enemy : MonoBehaviour
        
         if (collision.gameObject.CompareTag("Player")&& collision.GetType().ToString()== "UnityEngine.CapsuleCollider2D")
         {
-            if(playerHealth!=null)
+            if(PlayerController.isAlive ==true)
             {
                 
                 playerHealth.DamagePlayer(damage);

@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public float lowJumpMultiplier;
     public GameObject attackHitBox;
     public float attackDuration;
+    
     #endregion
 
     #region Privaten Varibles
@@ -22,34 +23,49 @@ public class PlayerController : MonoBehaviour
     public int jumpRestTimes;
     public bool isGround;
     public float moveDir;
+    public static bool isAlive;
     #endregion
 
     #region Component Varibles
     private BoxCollider2D myFeet;
     public Rigidbody2D myRig;
     private Animator myAnima;
+    private CapsuleCollider2D myBody;
     public float myGravity = 2;
     #endregion
     void Start()
     {
+        isAlive = true;
         myRig = GetComponent<Rigidbody2D>();
         myAnima = GetComponent<Animator>();
         myFeet = GetComponent<BoxCollider2D>();
+        myBody = GetComponent<CapsuleCollider2D>();
     }
     void Update()
     {
+        if (isAlive)
+        {
+            Jump();
+        }
         Flip();
-        Jump();
+        
         CheckGround();
         AnimationSwitch();
-        Dash();
-        BetterFalling();
-    
         
+        BetterFalling();
+
+
+        if (isAlive == false)
+        {
+            myRig.velocity = new Vector2(0, 0);
+        }
     }
     private void FixedUpdate()
     {
-        Run();
+        if (isAlive)
+        {
+            Run();
+        }
 
     }
     void Run()
@@ -89,7 +105,7 @@ public class PlayerController : MonoBehaviour
             
             jumpRestTimes--;
 
-            myAnima.SetBool("jump", true);
+            myAnima.SetBool("Jump", true);
         }
 
         if(isGround)
@@ -108,7 +124,7 @@ public class PlayerController : MonoBehaviour
         myAnima.SetBool("idle", false);
         if(myRig.velocity.y<0.0f)
         {
-            myAnima.SetBool("jump", false);
+            myAnima.SetBool("Jump", false);
             myAnima.SetBool("fall", true);
         }
        
@@ -118,14 +134,7 @@ public class PlayerController : MonoBehaviour
             myAnima.SetBool("idle", true);
         }
     }
-    void Dash()
-    {
-        if(Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            myRig.AddForce(Vector2.right * moveDir * dashSpeed);
-            myAnima.SetTrigger("dash");
-        }
-    }
+  
     void BetterFalling()
     {
         if(myRig.velocity.y<0)
@@ -138,8 +147,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-   
-
     IEnumerator AttackHitBox(float attackDuration)
     {
         while(true)
@@ -150,6 +157,7 @@ public class PlayerController : MonoBehaviour
 
         }
     }
+
 }
 
     
