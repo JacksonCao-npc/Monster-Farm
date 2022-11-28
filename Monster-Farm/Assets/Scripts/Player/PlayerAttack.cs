@@ -25,13 +25,14 @@ public class PlayerAttack : MonoBehaviour
     }
     void Attack()
     {
-        if (PlayerController.isAlive)
+        if (GameController.playerIsAlive==true)
         {
             if (Input.GetKeyDown(KeyCode.J))
             {
-
+                
                 anime.SetTrigger("Attack");
                 StartCoroutine(StartAttack());
+                
 
             }
         }
@@ -42,6 +43,7 @@ public class PlayerAttack : MonoBehaviour
     {
         yield return new WaitForSeconds(attackStartTime);
         hitBox.enabled = true;
+        
         StartCoroutine(DisableHitBox());
 
     }
@@ -49,6 +51,8 @@ public class PlayerAttack : MonoBehaviour
     {
         yield return new WaitForSeconds(attackDuration);
         hitBox.enabled = false;
+        
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

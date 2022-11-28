@@ -4,18 +4,21 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
+    [Header("Enemy Setting")]
     public int health;
     public int damage;
-    private SpriteRenderer sr;
+    public PlayerHealth playerHealth;
     public float flashTime;
-    private Color originalColor;
     public GameObject bloodEffect;
-    [SerializeField] PlayerHealth playerHealth;
+
+
+    private Color originalColor;
+    private SpriteRenderer sr;
     public void Start()
     {
         sr = GetComponent<SpriteRenderer>();
         originalColor = sr.color;
-        playerHealth = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHealth>();
+       
     }
 
 
@@ -51,7 +54,7 @@ public abstract class Enemy : MonoBehaviour
        
         if (collision.gameObject.CompareTag("Player")&& collision.GetType().ToString()== "UnityEngine.CapsuleCollider2D")
         {
-            if(PlayerController.isAlive ==true)
+            if(GameController.playerIsAlive ==true)
             {
                 
                 playerHealth.DamagePlayer(damage);

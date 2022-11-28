@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public GameObject player;
-
-
+    public Transform player;
     public float smoothing;
-
-    public Vector2 minPostion;
-    public Vector2 maxPostion;
+    
     void Start()
     {
         GameController.camShake = GameObject.FindGameObjectWithTag("CameraShake").GetComponent<CameraShake>();
@@ -19,23 +15,13 @@ public class CameraFollow : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(player!= null)
+        if(player !=null)
         {
-            if(transform.position != player.transform.position)
+            if(transform.position!= player.position)
             {
-                Vector3 playerPos = player.transform.position;
-                playerPos.x = Mathf.Clamp(playerPos.x, minPostion.x, maxPostion.x);
-               playerPos.y = Mathf.Clamp(playerPos.y, minPostion.y, maxPostion.y);
+                Vector3 playerPos = player.position;
                 transform.position = Vector3.Lerp(transform.position, playerPos, smoothing);
             }
         }
     }
-
-    public void SetCamPostion(Vector2 minPos, Vector2 maxPos)
-    {
-        minPostion = minPos;
-        maxPostion = maxPos;
-    }
-
-
 }

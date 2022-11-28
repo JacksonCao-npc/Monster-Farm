@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     public float lowJumpMultiplier;
     public GameObject attackHitBox;
     public float attackDuration;
+    public float restoreLayerTime;
+    public float climbSpeed;
     
     #endregion
 
@@ -23,46 +25,57 @@ public class PlayerController : MonoBehaviour
     public int jumpRestTimes;
     public bool isGround;
     public float moveDir;
-    public static bool isAlive;
+    public bool isOneWayPlatform;
+    public bool isLadder;
+    private bool isClimbing;
+    private bool isJumping;
+    private bool isFalling;
+    private float playerGravity;
+  
     #endregion
 
     #region Component Varibles
     private BoxCollider2D myFeet;
     public Rigidbody2D myRig;
     private Animator myAnima;
-    private CapsuleCollider2D myBody;
+    
     public float myGravity = 2;
     #endregion
     void Start()
     {
-        isAlive = true;
+        
         myRig = GetComponent<Rigidbody2D>();
         myAnima = GetComponent<Animator>();
         myFeet = GetComponent<BoxCollider2D>();
-        myBody = GetComponent<CapsuleCollider2D>();
+        playerGravity = myRig.gravityScale;
+       
     }
     void Update()
     {
-        if (isAlive)
+        if (GameController.playerIsAlive==true)
         {
             Jump();
+            CheckAirStatus();
+            Climb();
+            Flip();
+            CheckGround();
+            CheckLadder();
+            AnimationSwitch();
+            OneWayPlatformCheck();
+            BetterFalling();
+           
         }
-        Flip();
-        
-        CheckGround();
-        AnimationSwitch();
-        
-        BetterFalling();
+       
 
 
-        if (isAlive == false)
+        if (GameController.playerIsAlive==false)
         {
             myRig.velocity = new Vector2(0, 0);
         }
     }
     private void FixedUpdate()
     {
-        if (isAlive)
+        if (GameController.playerIsAlive==true)
         {
             Run();
         }
@@ -70,28 +83,31 @@ public class PlayerController : MonoBehaviour
     }
     void Run()
     {
-       moveDir = Input.GetAxis("Horizontal");
-
-        Vector2 playerVel = new Vector2(moveDir * runSpeed, myRig.velocity.y);
-        myRig.velocity = playerVel;
-
-        bool playerHasXAxisSpeed = Mathf.Abs(myRig.velocity.x) > Mathf.Epsilon;
-        if (playerHasXAxisSpeed)
+        if (GameController.canMove)
         {
-            myAnima.SetBool("run", true);
-        }
-        else
-        {
-            myAnima.SetBool("run", false);
+            moveDir = Input.GetAxis("Horizontal");
+
+            Vector2 playerVel = new Vector2(moveDir * runSpeed, myRig.velocity.y);
+            myRig.velocity = playerVel;
+
+            bool playerHasXAxisSpeed = Mathf.Abs(myRig.velocity.x) > Mathf.Epsilon;
+            if (playerHasXAxisSpeed)
+            {
+                myAnima.SetBool("run", true);
+            }
+            else
+            {
+                myAnima.SetBool("run", false);
+            }
         }
     }
     void Flip()
     {
-        if (myRig.velocity.x > 0)
+        if (myRig.velocity.x > 0.1f)
         {
             transform.localRotation = Quaternion.Euler(0, 0, 0);
         }
-        if (myRig.velocity.x < 0)
+        if (myRig.velocity.x < -0.1f)
         {
             transform.localRotation = Quaternion.Euler(0, 180, 0);
         }
@@ -113,22 +129,66 @@ public class PlayerController : MonoBehaviour
             jumpRestTimes = maxJump;
         }
     }
+
+    void Climb()
+    {
+        if(isLadder)
+        {
+            float moveY = Input.GetAxis("Vertical");
+            if(moveY >0.5f || moveY<-0.5f)
+            {
+                myAnima.SetBool("Climb", true);
+                myRig.gravityScale = 0.0f;
+                myRig.velocity = new Vector2(myRig.velocity.x, moveY * climbSpeed);
+            }
+            else
+            {
+                if(isJumping || isFalling)
+                {
+                    myAnima.SetBool("Climb", false);
+                }
+                else
+                {
+                    myAnima.SetBool("Climb", false);
+                    myRig.velocity = new Vector2(myRig.velocity.x, 0.0f);
+                }
+            }
+        }
+
+        else
+        {
+            myAnima.SetBool("Climb", false);
+            myRig.gravityScale = playerGravity;
+        }
+    }
     void CheckGround()
     {
-        isGround = myFeet.IsTouchingLayers(LayerMask.GetMask("Ground"));
+        isGround = myFeet.IsTouchingLayers(LayerMask.GetMask("Ground")) ||
+                   myFeet.IsTouchingLayers(LayerMask.GetMask("MovingPlatform"))||
+                   myFeet.IsTouchingLayers(LayerMask.GetMask("OneWayPlatform"));
+        isOneWayPlatform= myFeet.IsTouchingLayers(LayerMask.GetMask("OneWayPlatform"));
     }
+
+    void CheckLadder()
+    {
+        isLadder = myFeet.IsTouchingLayers(LayerMask.GetMask("Ladder"));
+    }
+
     void AnimationSwitch()
 
     {
         bool upVelocity = Mathf.Abs(myRig.velocity.y) > 0;
+
         myAnima.SetBool("idle", false);
-        if(myRig.velocity.y<0.0f)
+        if (myAnima.GetBool("Jump"))
         {
-            myAnima.SetBool("Jump", false);
-            myAnima.SetBool("fall", true);
+            if (myRig.velocity.y < 0.0f)
+            {
+                myAnima.SetBool("Jump", false);
+                myAnima.SetBool("fall", true);
+            }
         }
-       
-        if(isGround)
+        else if(isGround)
         {
             myAnima.SetBool("fall", false);
             myAnima.SetBool("idle", true);
@@ -157,6 +217,38 @@ public class PlayerController : MonoBehaviour
 
         }
     }
+
+    void OneWayPlatformCheck()
+    {
+        if(isGround&& gameObject.layer!= LayerMask.NameToLayer("Player"))
+        {
+            gameObject.layer = LayerMask.NameToLayer("Player");
+        }
+        float moveY = Input.GetAxis("Vertical");
+        if(isOneWayPlatform && moveY < -0.1f )
+        {
+            gameObject.layer = LayerMask.NameToLayer("OneWayPlatform");
+            Invoke("RestorePlayerLayer", restoreLayerTime);
+        }
+    }
+
+    void RestorePlayerLayer()
+    {
+        if(!isGround && gameObject.layer != LayerMask.NameToLayer("Player"))
+        {
+            gameObject.layer = LayerMask.NameToLayer("Player");
+        }
+    }
+
+    void CheckAirStatus()
+    {
+        isJumping = myAnima.GetBool("Jump") ;
+        isFalling = myAnima.GetBool("fall");
+        isClimbing = myAnima.GetBool("Climb");
+
+    }
+
+    
 
 }
 
