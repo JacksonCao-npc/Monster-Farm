@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
 
     #region Component Varibles
     private BoxCollider2D myFeet;
-    public Rigidbody2D myRig;
+    public Rigidbody2D myRidgeBody;
     private Animator myAnima;
     
     public float myGravity = 2;
@@ -44,10 +44,10 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         
-        myRig = GetComponent<Rigidbody2D>();
+        myRidgeBody = GetComponent<Rigidbody2D>();
         myAnima = GetComponent<Animator>();
         myFeet = GetComponent<BoxCollider2D>();
-        playerGravity = myRig.gravityScale;
+        playerGravity = myRidgeBody.gravityScale;
        
     }
     void Update()
@@ -70,7 +70,7 @@ public class PlayerController : MonoBehaviour
 
         if (GameController.playerIsAlive==false)
         {
-            myRig.velocity = new Vector2(0, 0);
+            myRidgeBody.velocity = new Vector2(0, 0);
         }
     }
     private void FixedUpdate()
@@ -87,27 +87,27 @@ public class PlayerController : MonoBehaviour
         {
             moveDir = Input.GetAxis("Horizontal");
 
-            Vector2 playerVel = new Vector2(moveDir * runSpeed, myRig.velocity.y);
-            myRig.velocity = playerVel;
+            Vector2 playerVel = new Vector2(moveDir * runSpeed, myRidgeBody.velocity.y);
+            myRidgeBody.velocity = playerVel;
 
-            bool playerHasXAxisSpeed = Mathf.Abs(myRig.velocity.x) > Mathf.Epsilon;
+            bool playerHasXAxisSpeed = Mathf.Abs(myRidgeBody.velocity.x) > Mathf.Epsilon;
             if (playerHasXAxisSpeed)
             {
-                myAnima.SetBool("run", true);
+                myAnima.SetBool("Run", true);
             }
             else
             {
-                myAnima.SetBool("run", false);
+                myAnima.SetBool("Run", false);
             }
         }
     }
     void Flip()
     {
-        if (myRig.velocity.x > 0.1f)
+        if (myRidgeBody.velocity.x > 0.1f)
         {
             transform.localRotation = Quaternion.Euler(0, 0, 0);
         }
-        if (myRig.velocity.x < -0.1f)
+        if (myRidgeBody.velocity.x < -0.1f)
         {
             transform.localRotation = Quaternion.Euler(0, 180, 0);
         }
@@ -116,8 +116,8 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space)&& jumpRestTimes>0)
         {
-            myRig.velocity = new Vector2(myRig.velocity.x, 0);
-            myRig.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
+            myRidgeBody.velocity = new Vector2(myRidgeBody.velocity.x, 0);
+            myRidgeBody.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
             
             jumpRestTimes--;
 
@@ -138,8 +138,8 @@ public class PlayerController : MonoBehaviour
             if(moveY >0.5f || moveY<-0.5f)
             {
                 myAnima.SetBool("Climb", true);
-                myRig.gravityScale = 0.0f;
-                myRig.velocity = new Vector2(myRig.velocity.x, moveY * climbSpeed);
+                myRidgeBody.gravityScale = 0.0f;
+                myRidgeBody.velocity = new Vector2(myRidgeBody.velocity.x, moveY * climbSpeed);
             }
             else
             {
@@ -150,7 +150,7 @@ public class PlayerController : MonoBehaviour
                 else
                 {
                     myAnima.SetBool("Climb", false);
-                    myRig.velocity = new Vector2(myRig.velocity.x, 0.0f);
+                    myRidgeBody.velocity = new Vector2(myRidgeBody.velocity.x, 0.0f);
                 }
             }
         }
@@ -158,7 +158,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             myAnima.SetBool("Climb", false);
-            myRig.gravityScale = playerGravity;
+            myRidgeBody.gravityScale = playerGravity;
         }
     }
     void CheckGround()
@@ -177,33 +177,33 @@ public class PlayerController : MonoBehaviour
     void AnimationSwitch()
 
     {
-        bool upVelocity = Mathf.Abs(myRig.velocity.y) > 0;
+        bool upVelocity = Mathf.Abs(myRidgeBody.velocity.y) > 0;
 
-        myAnima.SetBool("idle", false);
+        myAnima.SetBool("Idle", false);
         if (myAnima.GetBool("Jump"))
         {
-            if (myRig.velocity.y < 0.0f)
+            if (myRidgeBody.velocity.y < 0.0f)
             {
                 myAnima.SetBool("Jump", false);
-                myAnima.SetBool("fall", true);
+                myAnima.SetBool("Fall", true);
             }
         }
         else if(isGround)
         {
-            myAnima.SetBool("fall", false);
-            myAnima.SetBool("idle", true);
+            myAnima.SetBool("Fall", false);
+            myAnima.SetBool("Idle", true);
         }
     }
   
     void BetterFalling()
     {
-        if(myRig.velocity.y<0)
+        if(myRidgeBody.velocity.y<0)
         {
-            myRig.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+            myRidgeBody.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
-        if(myRig.velocity.y<0&& !Input.GetButton("Jump"))
+        if(myRidgeBody.velocity.y<0&& !Input.GetButton("Jump"))
         {
-            myRig.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+            myRidgeBody.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
         }
     }
 
@@ -243,7 +243,7 @@ public class PlayerController : MonoBehaviour
     void CheckAirStatus()
     {
         isJumping = myAnima.GetBool("Jump") ;
-        isFalling = myAnima.GetBool("fall");
+        isFalling = myAnima.GetBool("Fall");
         isClimbing = myAnima.GetBool("Climb");
 
     }
