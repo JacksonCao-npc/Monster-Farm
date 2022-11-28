@@ -114,7 +114,7 @@ public class PlayerController : MonoBehaviour
     }
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space)&& jumpRestTimes>0)
+        if (Input.GetKeyDown(KeyCode.Space)&& jumpRestTimes>0&& !Input.GetKeyDown(KeyCode.S))
         {
             myRidgeBody.velocity = new Vector2(myRidgeBody.velocity.x, 0);
             myRidgeBody.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
@@ -225,7 +225,7 @@ public class PlayerController : MonoBehaviour
             gameObject.layer = LayerMask.NameToLayer("Player");
         }
         float moveY = Input.GetAxis("Vertical");
-        if(isOneWayPlatform && moveY < -0.1f )
+        if(isOneWayPlatform && Input.GetKeyDown(KeyCode.S) && Input.GetButtonDown("Jump"))
         {
             gameObject.layer = LayerMask.NameToLayer("OneWayPlatform");
             Invoke("RestorePlayerLayer", restoreLayerTime);

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int health;
+    public static int health;
+    public int healthInspector;
     private Renderer myRenderer;
     public int blinks;
     public float blinkTime;
@@ -34,11 +35,17 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        healthInspector = health;
     }
 
-    
 
+    public void HealPlayer(int healAmount)
+    {if (health != HealthBar.HealthMax)
+        {
+            health += healAmount;
+            HealthBar.HealthCurrent = health;
+        }
+    }
     public void DamagePlayer(int damage)
     {
         health -= damage;
