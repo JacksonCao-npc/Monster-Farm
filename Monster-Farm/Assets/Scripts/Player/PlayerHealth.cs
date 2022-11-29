@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public static int health;
-    public int healthInspector;
+    public int health;
+   
     private Renderer myRenderer;
     public int blinks;
     public float blinkTime;
@@ -17,14 +17,17 @@ public class PlayerHealth : MonoBehaviour
     private PolygonCollider2D polygonCollider2D;
     public float hitBoxCDTime;
 
- 
-  
+
+    private void Awake()
+    {
+        HealthBar.HealthMax = health;
+        HealthBar.HealthCurrent = health;
+    }
     // Start is called before the first frame update
     public void Start()
     {
+
         
-        health = HealthBar.HealthMax = 10;
-        health = HealthBar.HealthCurrent = 10;
         
         myRenderer = GetComponent<Renderer>();
         anima = GetComponent<Animator>();
@@ -35,7 +38,7 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        healthInspector = health;
+        
     }
 
 

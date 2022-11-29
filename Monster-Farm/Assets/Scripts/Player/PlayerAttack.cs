@@ -22,6 +22,7 @@ public class PlayerAttack : MonoBehaviour
     void Update()
     {
         Attack();
+        
     }
     void Attack()
     {
@@ -32,8 +33,6 @@ public class PlayerAttack : MonoBehaviour
                 
                 anime.SetTrigger("Attack");
                 StartCoroutine(StartAttack());
-                
-
             }
         }
 
@@ -45,7 +44,6 @@ public class PlayerAttack : MonoBehaviour
         hitBox.enabled = true;
         
         StartCoroutine(DisableHitBox());
-
     }
     IEnumerator DisableHitBox()
     {
@@ -54,7 +52,6 @@ public class PlayerAttack : MonoBehaviour
         
         
     }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.CompareTag("Enemy"))
@@ -62,4 +59,5 @@ public class PlayerAttack : MonoBehaviour
             collision.GetComponent<Enemy>().TakenDamage(damage);
         }
     }
+
 }

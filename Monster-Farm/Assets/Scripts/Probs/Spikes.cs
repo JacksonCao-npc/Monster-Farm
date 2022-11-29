@@ -13,11 +13,14 @@ public class Spikes : MonoBehaviour
 
 
     private void OnTriggerEnter2D(Collider2D collision)
-    {
 
-        if (collision.gameObject.CompareTag("Player") && collision.GetType().ToString() == "UnityEngine.PolygonCollider2D")
+    {
+        if (GameController.playerIsAlive)
         {
-            playerHealth.DamagePlayer(spikeDamage);
+            if (collision.gameObject.CompareTag("Player") && collision.GetType().ToString() == "UnityEngine.PolygonCollider2D")
+            {
+                playerHealth.DamagePlayer(spikeDamage);
+            }
         }
     }
 }
