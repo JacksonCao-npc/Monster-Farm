@@ -17,6 +17,7 @@ public class Sign : MonoBehaviour
             dialogText.text = signText;
             dialogbox.SetActive(true);
         }
+        
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {

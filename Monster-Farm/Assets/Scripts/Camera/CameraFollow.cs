@@ -6,6 +6,8 @@ public class CameraFollow : MonoBehaviour
 {
     public Transform player;
     public float smoothing;
+    public Vector3 cameraOffSet;
+    public float pressDownCamera;
     
     void Start()
     {
@@ -19,7 +21,15 @@ public class CameraFollow : MonoBehaviour
         {
             if(transform.position!= player.position)
             {
-                Vector3 playerPos = player.position;
+                if(Input.GetKeyDown(KeyCode.S))
+                {
+                    cameraOffSet.y += pressDownCamera;
+                }
+                if(Input.GetKeyUp(KeyCode.S))
+                {
+                    cameraOffSet.y -= pressDownCamera;
+                }
+                Vector3 playerPos = player.position + cameraOffSet;
                 transform.position = Vector3.Lerp(transform.position, playerPos, smoothing);
             }
         }
